@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+START=$(date +%s)
+
+hpath=/user/data/gent/gvo000/gvo00022/00_data/00_ALL
+
+#for $1 task
+TASK=EMOTION #S1
+echo $TASK
+task=${TASK}_s4
+tpath=$hpath/$task
+mkdir -p $tpath
+cd $tpath
+#for all (unrelated ? verify text file) subjects
+user=TYPENAME
+pass=TYPEPASS
+for ID in $(cat ${hpath}/IDsALL.txt)
+do
+	echo $ID 
+	mkdir -p $tpath/${ID}
+	cd $tpath/${ID}
+	for j in {1..6}
+	do
+		for i in cope${j}.nii.gz mask.nii.gz pe${j}.nii.gz res4d.nii.gz varcope${j}.nii.gz 
+		do 
+		# make folder for ID
+		serverpath=https://db.humanconnectome.org/data/archive/projects/HCP_500/subjects/${ID}/MNINonLinear/Results/tfMRI_${TASK}/tfMRI_${TASK}_hp200_s4_level2vol.feat/cope${j}.feat/stats/${i}
+		curl -u $user:$pass -O $serverpath
+		done 
+	done
+done
+# your logic ends here
+END=$(date +%s)
+DIFF=$(( $END - $START ))
+echo "It took $DIFF seconds"
